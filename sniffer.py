@@ -8,13 +8,23 @@ class NetworkSniffer:
         print('Initializing socket connection')
         self.conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0800))
 
-    def filter_mac_address(self, raw_data):
+    def filter_mac_address(self, raw_data: bytes):
+        """
+        This Method filters source and destination mac address and Network Protocol
+        :param raw_data: raw network bytes
+        :return: destination mac address, source_mac address ,network protocol and data
+        """
         dest_mac, source_mac, protocol = struct.unpack('! 6s 6s H', raw_data[:14])
         return self.format_mac_address(dest_mac), self.format_mac_address(source_mac), socket.htons(protocol), raw_data[
                                                                                                                14:]
 
     @staticmethod
     def format_mac_address(bytes_addr):
+        """
+        Formats byte mac address to human readable mac address string. Ex: XX:XX:XX:XX:XX:XX
+        :param bytes_addr: bytes
+        :return: Mac address: str
+        """
         bytes_str = b':'.join(["%02X" % (ord(x)) for x in bytes_addr])
         return bytes_str.upper()
 
