@@ -34,13 +34,26 @@ class NetworkSniffer:
         print('Starting main loop')
         while True:
             raw_data, addr = self.conn.recvfrom(65535)
+
+            print("""
+            ==========================================================
+            ********************** Packet Start **********************
+            """)
             dest_mac, source_mac, network_protocol, data = self.filter_mac_address(raw_data)
-            print('Network frame', dest_mac, source_mac, network_protocol)
+            print('Network frame' + '\n\tSource Mac Address :- ' + str(source_mac) + '\n\tDestination Mac Address :-' +
+                  str(dest_mac) + '\n\tNetwork protocol :- ' + str(network_protocol))
 
             if network_protocol == 8:
                 version, header_length, ttl, ipv4_protocol, source_ip, target_ip, payload_data = self.unpack_ipv4_packet(
                     data)
-                print('IPV4 frame', version, header_length, ttl, ipv4_protocol, source_ip, target_ip)
+                print('\nIPV4 frame' + '\n\tVersion :- ' + str(version) + '\n\tHeader length :- ' + str(header_length) +
+                      '\n\tTime to live :- ' + str(ttl) + '\n\tIPv4 protocol :- ' + str(ipv4_protocol) +
+                      '\n\tSource IP address :- ' + source_ip + '\n\tDestination IP address :- ' + target_ip)
+
+            print("""
+            ********************** Packet End ************************
+            ==========================================================\n\n
+            """)
 
 
 if __name__ == '__main__':
