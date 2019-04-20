@@ -8,7 +8,7 @@ class NetworkSniffer:
         print('Initializing socket connection')
         self.conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0800))
 
-    def filter_mac_address(self, raw_data: bytes):
+    def filter_mac_address(self, raw_data):
         """
         This Method filters source and destination mac address and Network Protocol
         :param raw_data: raw network bytes
