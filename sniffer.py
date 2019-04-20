@@ -38,6 +38,11 @@ class NetworkSniffer:
         src_port, dest_port, size = struct.unpack('! H H 2x H', data[:8])
         return src_port, dest_port, size, data[8:]
 
+    def unpack_tcp_segment(self, data):
+        src_port, dest_port, sequence, acknowledgment, offset_reserved_flag = struct.unpack('! H H L L H', data[:14])
+
+        return src_port, dest_port, sequence, acknowledgment, offset_reserved_flag, data[14:]
+
     def run(self):
         print('Starting main loop')
         while True:
@@ -67,6 +72,14 @@ class NetworkSniffer:
                     src_port, dest_port, size, upd_data = self.unpack_udp_packet(payload_data)
                     print('\n UDP packet \n\t Source Port :- ' + str(src_port) + '\n\t Destinantion Port :- ' +
                           str(dest_port) + '\n\t Size :-' + str(size))
+
+                if ipv4_protocol == 6:
+                    src_port, dest_port, sequence, acknowledgment, offset_reserved_flag, tcp_data = self.unpack_tcp_segment(
+                        payload_data)
+
+                    print(
+                        '\nTCP packet \n\t Source Port :- {}\n\t Destinantion Port :- {}\n\t Acknowledgement :- {}'
+                        ' \n\t Flags {}'.format(src_port, dest_port, acknowledgment, offset_reserved_flag))
 
             print("""
             ********************** Packet End ************************
