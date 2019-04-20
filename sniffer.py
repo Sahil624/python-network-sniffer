@@ -5,7 +5,7 @@ import struct
 class NetworkSniffer:
 
     def __init__(self):
-        print('Initalizing socket connection')
+        print('Initializing socket connection')
         self.conn = socket.socket(socket.AF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0800))
 
     def filter_mac_address(self, raw_data):
@@ -30,6 +30,10 @@ class NetworkSniffer:
     def format_ipv4(raw_address):
         return socket.inet_ntoa(raw_address)
 
+    def unpack_icmp_packet(self, data):
+        icmp_type, code, checksum = struct.unpack('! B B H', data[:4])
+        return icmp_type, code, checksum, data[4:]
+
     def run(self):
         print('Starting main loop')
         while True:
@@ -49,6 +53,11 @@ class NetworkSniffer:
                 print('\nIPV4 frame' + '\n\tVersion :- ' + str(version) + '\n\tHeader length :- ' + str(header_length) +
                       '\n\tTime to live :- ' + str(ttl) + '\n\tIPv4 protocol :- ' + str(ipv4_protocol) +
                       '\n\tSource IP address :- ' + source_ip + '\n\tDestination IP address :- ' + target_ip)
+
+                if ipv4_protocol == 1:
+                    icmp_type, code, checksum, icmp_data = self.unpack_icmp_packet(payload_data)
+                    print('\nICMP data packet' + '\n\t ICMP type :- ' + str(icmp_type) + '\n\t code :- ' +
+                          str(code) + '\n\tchecksum :- ' + str(checksum))
 
             print("""
             ********************** Packet End ************************
