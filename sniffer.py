@@ -34,6 +34,10 @@ class NetworkSniffer:
         icmp_type, code, checksum = struct.unpack('! B B H', data[:4])
         return icmp_type, code, checksum, data[4:]
 
+    def unpack_udp_packet(self, data):
+        src_port, dest_port, size = struct.unpack('! H H 2x H', data[:8])
+        return src_port, dest_port, size, data[8:]
+
     def run(self):
         print('Starting main loop')
         while True:
@@ -58,6 +62,11 @@ class NetworkSniffer:
                     icmp_type, code, checksum, icmp_data = self.unpack_icmp_packet(payload_data)
                     print('\nICMP data packet' + '\n\t ICMP type :- ' + str(icmp_type) + '\n\t code :- ' +
                           str(code) + '\n\tchecksum :- ' + str(checksum))
+
+                if ipv4_protocol == 17:
+                    src_port, dest_port, size, upd_data = self.unpack_udp_packet(payload_data)
+                    print('\n UDP packet \n\t Source Port :- ' + str(src_port) + '\n\t Destinantion Port :- ' +
+                          str(dest_port) + '\n\t Size :-' + str(size))
 
             print("""
             ********************** Packet End ************************
